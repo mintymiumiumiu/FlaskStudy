@@ -1,0 +1,25 @@
+Local 线程隔离对象
+当同时有多个人访问网站并post数据时，使用local 线程隔离对象可避免一些数据干扰。
+只要绑定在local对象上的属性在每个线程中都是隔离的。
+
+from threading import Thread
+from werkzeug.local import Local
+
+local = Local()
+local.request = '123'
+
+class MyThread(Thread):
+  def run(self):
+    local.request = 'abc'
+    print('子线程：' local.request)
+    
+mythread = MyThread()
+mythread.start()
+//确保该子线程跑完之后才会继续往下走
+mythread.join()
+
+print('主线程 ：' local.request)
+
+result:
+  子线程：'abc'
+  主线程：'123'
